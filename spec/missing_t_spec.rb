@@ -21,6 +21,9 @@ describe "MissingT" do
        "book"=>"livre",
        "handkerchief"=>"mouchoir",
        "mother" => "mere"}}
+
+    @other_es_translations = { "es" => {"zoo" => {}}}
+    @yet_other_es_translations = { "es" => {"zoo" => {"monkey" => "mono", "horse" => "caballo"}}}
   end
 
   describe "adding translations" do
@@ -38,6 +41,19 @@ describe "MissingT" do
       @missing_t["fr"].should have_key("mother")
       @missing_t["es"]["zoo"].should have_key("bee")
     end
+
+    it "should not overwrite translations keys" do
+      @missing_t.add_translations(@other_es_translations)
+      @missing_t["es"]["zoo"].should have_key("bear")
+      @missing_t["es"]["zoo"].should have_key("bee")
+    end
+
+    it "should add the new translations even if they contain keys already in the translations hash" do
+      @missing_t.add_translations(@yet_other_es_translations)
+      @missing_t["es"]["zoo"].should have_key("monkey")
+      @missing_t["es"]["zoo"].should have_key("bear")
+    end
+
   end
 
   describe "hashification" do
@@ -74,6 +90,8 @@ describe "MissingT" do
       content = <<-EOS
         <div class="title_gray"><span><%= I18n.t("anetcom.member.projects.new.page_title") %></span></div>
         <%= submit_tag I18n.t('anetcom.member.projects.new.create_project'), :class => 'button' %>
+        <%= link_to I18n.t("tog_headlines.admin.publish"), publish_admin_headlines_story_path(story), :class => 'button' %>
+        :html => {:title => I18n.t("tog_social.sharing.share_with", :name => shared.name)} 
       EOS
       $stubba = Mocha::Central.new
       @missing_t.stubs(:get_content_of_file_with_i18n_queries).returns(content)
@@ -81,7 +99,7 @@ describe "MissingT" do
 
     it "should extract the I18n queries correctly when do" do
       i18n_queries = @missing_t.extract_i18n_queries(nil)
-      i18n_queries.should == ["anetcom.member.projects.new.page_title", "anetcom.member.projects.new.create_project"]
+      i18n_queries.should == ["anetcom.member.projects.new.page_title", "anetcom.member.projects.new.create_project", "tog_headlines.admin.publish", "tog_social.sharing.share_with"]
     end
 
   end

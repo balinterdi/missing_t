@@ -12,6 +12,28 @@ class Hash
     end
     true
   end
+
+  # idea snatched from deep_merge in Rails source code
+  def deep_safe_merge(other_hash)
+    self.merge(other_hash) do |key, oldval, newval|
+      oldval = oldval.to_hash if oldval.respond_to?(:to_hash)
+      newval = newval.to_hash if newval.respond_to?(:to_hash)
+      if oldval.class.to_s == 'Hash'
+        if newval.class.to_s == 'Hash'
+          oldval.deep_safe_merge(newval)
+        else
+          oldval
+        end
+      else
+        newval
+      end
+    end
+  end
+
+  def deep_safe_merge!(other_hash)
+    replace(deep_safe_merge(other_hash))
+  end
+
 end
 
 class MissingT
@@ -24,19 +46,23 @@ class MissingT
     @translations = Hash.new
   end
 
-  # NOTE: this method is needed(?)
-  # to be able to stub it out
+  # NOTE: this method is needed
+  # because attr_reader :translations
+  # does not seem to be stubbable
   def translations
     @translations
   end
 
-  def add_translations(translations)
-    @translations.merge!(translations)
+  def add_translations(trs)
+    translations.deep_safe_merge!(trs)
   end
 
   def collect_translations
-    Dir.glob("locales/**/*.yml") do |file|
-      add_translations(translations_in_file(file))
+    locales_pathes = ["config/locales/**/*.yml", "vendor/plugins/**/config/locales/**/*yml", "vendor/plugins/**/locale/**/*yml"]
+    locales_pathes.each do |path|
+      Dir.glob(path) do |file|
+        add_translations(translations_in_file(file))
+      end
     end
   end
 
@@ -65,11 +91,13 @@ class MissingT
 
   def get_content_of_file_with_i18n_queries(file)
     f = open(File.expand_path(file), "r")
-    f.read()
+    content = f.read()
+    f.close()
+    content
   end
 
   def extract_i18n_queries(file)
-    i18n_query_pattern = /I18n\.(?:translate|t)\s*\((.*)\)/
+    i18n_query_pattern = /I18n\.(?:translate|t)\s*\((.*?)[,\)]/
     get_content_of_file_with_i18n_queries(file).
       scan(i18n_query_pattern).map { |match| match.first.gsub(/[^\w\.]/, '') }
   end
@@ -82,8 +110,8 @@ class MissingT
 
   def has_translation?(lang, query)
     t = translations
-    (lang + '.' + query).split('.').each do |segment|
-      return false unless t.key?(segment)
+    i18n_label(lang, query).split('.').each do |segment|
+      return false unless (t.respond_to?(:key?) and t.key?(segment))
       t = t[segment]
     end
     true
@@ -93,29 +121,36 @@ class MissingT
     languages = lang.nil? ? translations.keys : [lang]
     languages.map do |l|
       miss_trs = get_missing_translations_for_lang(l, collect_translation_queries).map do |q|
-        "#{l}.#{q}"
+        i18n_label(l, q)
       end
     end.flatten
   end
 
-  def find_missing_translations
+  def find_missing_translations(lang=nil)
     collect_translations
-    pp get_missing_translations
+    # collect_translation_queries
+    get_missing_translations(lang)
   end
 
   private
     def get_missing_translations_for_lang(lang, queries)
       raise Exception, "There are no translations in #{lang}" unless translations.key?(lang)
-      # debugger
       queries.select do |q|
-        # pp "XXX Checking if #{translations[lang].inspect} has nested key #{q.inspect}: #{translations[lang].has_nested_key?(q)}"
-        !translations[lang].has_nested_key?(q)
+        unless has_translation?(lang, q)
+          # debugger
+          # pp "XXX Can not find translation for: #{i18n_label(lang, q)}"
+        end
+        !has_translation?(lang, q)
       end
 
+    end
+
+    def i18n_label(lang, query)
+      "#{lang}.#{query}"
     end
 
 end
 
 if __FILE__ == $0
-  find_missing_translations
+  pp MissingT.new.find_missing_translations("es")
 end
