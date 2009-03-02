@@ -160,5 +160,12 @@ class MissingT
 end
 
 if __FILE__ == $0
-  pp MissingT.new.find_missing_translations("es")
+  # puts "ARGV[1] = #{ARGV[0]}"
+  # pp MissingT.new.find_missing_translations(ARGV[0]).values.inject(0) { |sum, qs| sum + qs.length }
+  MissingT.new.find_missing_translations(ARGV[0]).each do |file, queries|
+    puts
+    puts "#{file}:"
+    puts
+    queries.each { |q| puts "    #{q}" }
+  end
 end
