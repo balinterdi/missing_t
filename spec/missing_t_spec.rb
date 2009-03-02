@@ -106,10 +106,10 @@ describe "MissingT" do
 
   describe "finding missing translations" do
     before do
-      @t_queries = ["mother", "zoo.bee", "zoo.wasp", "pen"]
+      @t_queries = { :fake_file => ["mother", "zoo.bee", "zoo.wasp", "pen"] }
       $stubba = Mocha::Central.new
       @missing_t.stubs(:translations).returns(@fr_translations.merge(@es_translations))
-      @missing_t.stubs(:collect_translation_queries).returns(@t_queries)
+      # @missing_t.stubs(:collect_translation_queries).returns(@t_queries)
     end
 
     it "should return true if it has a translation given in the I18n form" do
@@ -123,14 +123,13 @@ describe "MissingT" do
     end
 
     it "should correctly get missing translations for a spec. language" do
-      miss_entries = @missing_t.get_missing_translations("fr")
-      ["fr.mother, zoo.bee, zoo.wasp, pen"]
+      miss_entries = @missing_t.get_missing_translations(@t_queries, "fr").map{ |e| e[1] }.flatten
       miss_entries.should include("fr.pen")
       miss_entries.should include("fr.zoo.bee")
     end
 
     it "should correctly get missing translations" do
-      miss_entries = @missing_t.get_missing_translations
+      miss_entries = @missing_t.get_missing_translations(@t_queries).map{ |e| e[1] }.flatten
       miss_entries.should include("fr.zoo.bee")
       miss_entries.should include("fr.pen")
       miss_entries.should include("es.zoo.wasp")

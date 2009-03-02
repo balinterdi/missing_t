@@ -103,9 +103,15 @@ class MissingT
   end
 
   def collect_translation_queries
-    files_with_i18n_queries.map do |file|
-      extract_i18n_queries(file)
-    end.flatten.uniq
+    queries = {}
+    files_with_i18n_queries.each do |file|
+      queries_in_file = extract_i18n_queries(file)
+      unless queries_in_file.empty?
+        queries[file] = queries_in_file
+      end
+    end
+    queries
+    #TODO: remove duplicate queries across files
   end
 
   def has_translation?(lang, query)
@@ -117,31 +123,33 @@ class MissingT
     true
   end
 
-  def get_missing_translations(lang=nil)
+  def get_missing_translations(queries, lang=nil)
+    missing = {}
     languages = lang.nil? ? translations.keys : [lang]
-    languages.map do |l|
-      miss_trs = get_missing_translations_for_lang(l, collect_translation_queries).map do |q|
-        i18n_label(l, q)
+    languages.each do |l|
+      get_missing_translations_for_lang(queries, l).each do |file, qs|
+        missing[file] ||= []
+        missing[file].concat(qs).uniq!
       end
-    end.flatten
+    end
+    missing
   end
 
   def find_missing_translations(lang=nil)
     collect_translations
-    # collect_translation_queries
-    get_missing_translations(lang)
+    get_missing_translations(collect_translation_queries, lang)
   end
 
   private
-    def get_missing_translations_for_lang(lang, queries)
-      raise Exception, "There are no translations in #{lang}" unless translations.key?(lang)
-      queries.select do |q|
-        unless has_translation?(lang, q)
-          # debugger
-          # pp "XXX Can not find translation for: #{i18n_label(lang, q)}"
+    def get_missing_translations_for_lang(queries, lang)
+      queries.map do |file, queries_in_file|
+        queries_with_no_translation = queries_in_file.select { |q| !has_translation?(lang, q) }
+        if queries_with_no_translation.empty?
+          nil
+        else
+          [file, queries_with_no_translation.map { |q| i18n_label(lang, q) }]
         end
-        !has_translation?(lang, q)
-      end
+      end.compact
 
     end
 
