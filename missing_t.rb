@@ -24,8 +24,8 @@ class MissingT
     @translations = Hash.new
   end
 
-  # NOTE: this method is needed(?) to be able to
-  # able to stub it out
+  # NOTE: this method is needed(?)
+  # to be able to stub it out
   def translations
     @translations
   end
@@ -57,14 +57,10 @@ class MissingT
     open(yaml_file) { |f| YAML.load(f.read) }
   end
 
-  def with_files_with_i18n_queries
-    Dir.glob("app/**/*.erb") do |file|
-      yield file
-    end
-  end
-
   def files_with_i18n_queries
-    Dir.glob("app/**/*.erb")
+    [ Dir.glob("app/**/*.erb"),
+    Dir.glob("app/**/controllers/**/*.rb"),
+    Dir.glob("app/**/helpers/**/*.rb")].flatten
   end
 
   def get_content_of_file_with_i18n_queries(file)
@@ -81,7 +77,7 @@ class MissingT
   def collect_translation_queries
     files_with_i18n_queries.map do |file|
       extract_i18n_queries(file)
-    end
+    end.flatten.uniq
   end
 
   def has_translation?(lang, query)
@@ -102,6 +98,11 @@ class MissingT
     end.flatten
   end
 
+  def find_missing_translations
+    collect_translations
+    pp get_missing_translations
+  end
+
   private
     def get_missing_translations_for_lang(lang, queries)
       raise Exception, "There are no translations in #{lang}" unless translations.key?(lang)
@@ -113,4 +114,8 @@ class MissingT
 
     end
 
+end
+
+if __FILE__ == $0
+  find_missing_translations
 end

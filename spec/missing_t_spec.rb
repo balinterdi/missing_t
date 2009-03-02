@@ -84,8 +84,6 @@ describe "MissingT" do
       i18n_queries.should == ["anetcom.member.projects.new.page_title", "anetcom.member.projects.new.create_project"]
     end
 
-    # it "should prepend the language to the returned"
-
   end
 
   describe "finding missing translations" do
@@ -93,8 +91,6 @@ describe "MissingT" do
       @t_queries = ["mother", "zoo.bee", "zoo.wasp", "pen"]
       $stubba = Mocha::Central.new
       @missing_t.stubs(:translations).returns(@fr_translations.merge(@es_translations))
-      # @missing_t.add_translations(@fr_translations)
-      # @missing_t.add_translations(@es_translations)
       @missing_t.stubs(:collect_translation_queries).returns(@t_queries)
     end
 
