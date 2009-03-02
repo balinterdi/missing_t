@@ -1,0 +1,635 @@
+es:
+  actions:
+    delete: "Eliminar"
+    edit: "Editar"
+    create: "Crear"
+    send: "Enviar"
+  tog_conversatio:
+    model:
+      post:
+        summary: Resúmen      
+  tog_core:
+    site:
+      comment:
+        add_comment: Añadir comentario
+        remove_confirmation: ¿Estás seguro de borrar el comentario?
+      abuse:
+        report: Repostar abuso
+  tog_headlines:
+    model:
+      lang: Idioma
+      source: fuente
+    site:
+      search: Buscar noticias
+      title: Titular
+      author: Autor
+      publish_date: Fecha publicación
+      comments: Comentarios
+  tog_user:
+    public:
+      login:
+        user_data: Introduce los datos de usuario
+        login: Iniciar sesión
+      forgot:
+        forgot_password: ¿Olvidó su contraseña?
+        will_receive_mail: Después de enviar este formulario, recibirá un email con las instrucciones para resetear su contraseña.
+        your_email: Su dirección de email
+        send: Enviar
+      reset:
+        change_password: Cambiar contraseña
+        enter_new_password: Introduzca la nueva contraseña
+        new_password: Nueva contraseña
+        repeat_new_password: Repita nueva contraseña
+        reset: Resetear
+      user_mailer:
+        are_receiving: You are recieving this e-mail because a request has been made to change the password associated with this address ({{email}}). If you haven't requested it, discard this email.
+        would_like_reset: If you would like to reset the password for this account simply click on the link below or paste it into the url field on your favorite browser
+        have_any_questions: If you have any questions about the system, feel free to contact us anytime.
+    sessions:
+      user_data: Introduzca sus datos
+      forgot_password: Si desea recordar su password.
+  tog_social:
+    friendships: 
+      member:
+        friend:
+          added: "Has solicitado a {{friend_name}} ser su contacto"
+          confirmed: "Has confirmado a {{friend_name}} como tu contacto"
+        mail:
+          add_friend:
+            subject: "¡{{user_name}} ha solicitado ser tu contacto!"
+            content: "Hola {{friend_name}}, <p>{{user_name}} ha solicitado ser tu contacto.</p> <p>Puedes ver el perfil de {{user_name}} aquí: <br/><a href='{{user_profile_url}}'>{{user_profile_url}}</a></p> <p>Para aceptarlo como contacto visita: <br/><a href='{{confirm_url}}'>{{confirm_url}}</a>"
+          confirm_friend:
+            subject: "!{{user_name}} te ha confirmado como contacto!"
+            content: "Hola {{friend_name}}, <p>{{user_name}} también te ha aceptado como contacto.</p> <p>Puedes ver el perfil de {{user_name}} aquí: <br/><a href='{{user_profile_url}}'>{{user_profile_url}}</a></p>"
+  interface:
+    admin:
+      projects: Proyectos  
+  anetcom:
+    groups:
+      model:
+        name: "Nombre"
+        description: "Descripción"
+        tags: "Etiquetas"
+        image: "Imagen"
+        private: "Privado"
+        moderated: "Moderado"
+        group: "Grupo"
+        moderators: "Moderadores"
+        created_at: "Fecha de creación"
+        articles: "Artículos"
+        members: "Miembros"
+        interest: "Grupo de interés"
+        industry: "Grupo de industria"
+    profiles:
+      model:
+        blog: "Blog"
+        avatar: "Avatar"
+        birth_date: "Fecha de nacimiento"
+        creation_date: "Fecha de creación"          
+        city: "Ciudad"
+        province: "Provincia"
+        country: "País"
+        address: "Dirección"
+        postal_code: "Código postal"
+        telephone: "Teléfono"
+        mobile: "Móvil"
+        msn: "MSN"
+        skype: "Skype"
+        description: "Descripción"
+        sector: "Sector"
+        situation: "Situación profesional"
+        position: "Puesto de trabajo"
+        company: "Empresa" 
+        employees: "Número de trabajadores"
+        interest: "Intereses"
+        services: "Servicios"
+        first_name: "Nombre"
+        last_name: "Apellidos"
+        website: "Página web" 
+        tags: "Etiquetas"
+        login: "Usuario"
+        email: "Correo electrónico"
+        password: "Contraseña"
+        from: "Desde"
+        since: "Hasta"
+        currently: "Actualmente"
+        company: "Empresa"
+        web: "Página web"
+        sector: "Sector"
+        description: "Descripción"
+        telephone: "Teléfono"
+        mobile: "Teléfono móvil"
+        email: "Correo electrónico"
+        web: "web"
+        blog: "blog"
+      roles:
+        researcher: "Investigador"
+        company: "Empresa"
+        investor: "Inversor"
+    posts:
+      model:
+        title: "Título"
+        status: "Estado"
+        published: "Publicado el"
+        summary: "Resumen"
+        body: "Texto"
+        user: "Fuente"            
+    site:
+      send_friend: Enviar a un amigo
+      total_rates: Total {{total}} votos
+      back: volver
+      search: Buscar
+    administrator:
+      projects:
+        title: Proyectos
+        bulk_update:
+          projects_updated: Se han actualizado los proyectos.
+        index:
+          submit: Actualizar destacados
+    friendships:       
+      member:
+        friend:
+          rejected: "Has rechazado a {{friend_name}} como tu contacto"
+        mail:
+          reject_friend:
+            subject: "!{{user_name}} te ha rechazado como contacto!"
+            content: "Hola {{friend_name}}, <p>{{user_name}} te ha rechazado como contacto.</p> <p>Puedes ver el perfil de {{user_name}} aquí: <br/><a href='{{user_profile_url}}'>{{user_profile_url}}</a></p>"
+    public:    
+      invitations:
+        sent: "Tu invitación ha sido enviada con éxito"
+        subject: "Invitación para participar en CLUSTIC"      
+      homepage: Inicio      
+      home:
+        already_user: "¿Ya eres usuario?"
+        init_session: "Inicie sesión"
+        login: "Acceder"
+        logout: "Cerrar sesión"
+        signup: "Registrarse"        
+        featured_projects:
+          title: Proyectos destacados
+          start_date: Fecha inicio
+          deadline: Plazo
+          required_investment: Inversion requerida
+          tags: Tags
+        email:
+          signup_notification:
+            welcome_to: Bienvenido a
+            created_correctly: Su cuenta ha sido creada correctamente.
+            user_name: Nombre del usuario
+            activate_account: Para activar su cuenta debe pulsar en el siguiente enlace
+            not_user_yet: No es usuario? Dese de alta ahora
+          activation:
+            welcome_to: Welcome to our site
+            pleasing_welcome: Thank you very much for joining us. We hope you find our site useful. We are constantly trying to improve our service. So please tell us what you think!
+            polite_formula: Kind regards
+            clustic_team: clusTIC
+          reset_notification:
+            reason: You are recieving this e-mail because a request has been made to change the password associated with this address ({{email}}). If you haven't requested it, discard this email.
+            what_to_do: If you would like to reset the password for this account simply click on the link below or paste it into the url field on your favorite browser
+            feel_free_to_contact_us: If you have any questions about the system, feel free to contact us anytime.
+        hello: Hola
+        find_expert: "<strong>encuentre</strong> un experto para su proyecto"
+        sponsors: "PATROCINADORES"
+        language: "Idioma"
+        search: "Buscar"
+        search_explanation: "Introduzca término para buscar..."
+        privacy_policy: "Política de privacidad"
+        legal_advise: "Condiciones del servicio"
+        slogan_for_researcher: "<strong>investigador</strong>Encuentre proyectos de investigación<br />Consiga financiación<br />Establezca contactos<br />"
+        slogan_for_company: "<strong>empresa</strong>Encuentre investigadores para sus proyectos<br />Participe en nuevos proyecto"
+        slogan_for_investor: "<strong>inversor</strong>Encuentre investigadores para sus proyectos<br />Participe en nuevos proyecto"
+
+        posts:
+          title: Posts  
+      groups:
+        only_for_members: "Sólo los miembros del grupo pueden ver esta información"
+        title: "Grupos"
+        header:
+          leave_this_group: "Dejar este grupo"
+          join_this_group: "Unirse a este grupo"
+          leave_this_group_confirm_msg: "¿Seguro de que quiere abandonar el grupo?"
+          tags: "Etiquetas"
+          moderator_group: "MODERADOR DEL GRUPO"
+        index:
+          search_group: "Buscar grupo"
+          search_field_text: "Introduzca término para buscar..."
+          search: "buscar"
+          invite: "Invita a tus contactos."
+          new_group: "sugerir un nuevo grupo"
+          section: "Grupos"
+        show:
+          about: "detalles"
+          news: "novedades"
+          members: "miembros"
+          articles: "artículos"
+          projects: "proyectos"
+          created_by: "Creado por"
+      profiles:
+        title: Usuarios
+        search_user: Buscar usuario
+        user_registered: "Sólo usuarios registrados pueden ver esta información."
+        only_for_members: "Sólo los miembros y amigos pueden consultar estos detalles."
+        
+        index:
+          section: "Usuarios" 
+          user: "Usuario"
+          groups: "Grupos"
+          contacts: "Contactos"
+          follow: "Sigue"
+          participate: "Participa"
+          manage: "Dirige"
+          followers: "Seguidores"
+      projects:
+        
+        title: Proyectos
+        project: Proyecto
+        categories: Categorias
+        start_date: Fecha inicio
+        articles: Articulos
+        team: Equipo
+        followers: Seguidores
+        edit_project: editar
+        featured: Destacado
+        created_at: Creado el
+
+        news:
+          news: Novedades
+          see_all: ver todos
+          created: creo el proyecto
+          joined: se unio al proyecto
+          started_following: empezo seguir el proyecto
+          feed_title: Novedades del proyecto    
+            
+        start_date: Fecha de inicio
+        director: Director del proyecto
+        participants: Participantes
+        industry: Industria
+        region: Región
+        budget: Presupuesto
+        investor_needed: Necesitan inversor
+        investor_no_needed: No necesitan inversor
+        join_project: Unirse al proyecto
+        pending_request: Tu solicitud para entrar en el proyecto está en espera
+        you_are_member: Eres miembro del proyecto
+        viewed: Visto {{views}} veces
+        followers: Seguidores
+        followers_number: Nº seguidores
+        pending_follower: Tu solicitud para seguir el proyecto está en espera
+        you_are_follower: Eres seguidor del proyecto
+        leave: Abandonar proyecto
+        remove_follow: Dejar de seguir
+        index:
+          section: "Proyectos"
+        followers:
+          leave: Dejar de seguir
+          leaved: Se ha dejado de seguir el proyecto
+          user_not_found: No eres seguidor del proyecto
+        last_projects: Últimos proyectos                    
+        title: Proyectos
+        only_for_members: Sólo los miembros del proyecto pueden consultar los detalles del mismo        
+        only_for_members_and_followers: Sólo los miembros y seguidores del proyecto pueden consultar los detalles del mismo
+        request_follow: Seguir proyecto
+        request_enter: Solicitar alta como miembro
+        search_project: Buscar proyecto        
+        header:
+          latest_activity: novedades
+          posts: artículos
+          about: el proyecto
+          last_activity: lo último
+          team: equipo
+          followers: seguidores
+        model:
+          tags: Etiquetas
+      sessions:     
+        password: "Contraseña"
+        password_forgotten: "He olvidado mi contraseña"
+        name_of_user: "Nombre de usuario"
+        remember_me: "Recordarme en este equipo"
+        signup: "Dese de alta"
+        now: "ahora"
+        enter: "entrar"
+      user:
+        numericality: "debe ser un número"
+      users:
+        login: "Nombre de usuario"
+        email: "Correo electrónico"
+        password: "Contraseña"
+        signup_now: "Alta de nuevo usuario" #"Regístrese ahora"
+        description: "Introduce los siguiente datos para darte de alta en el sistema. Una vez rellenados, te enviaremos un email para que confirmes que son correctos."
+        description_extended: "Una vez lo hagas, te recomendamos que completes los datos de tu perfil."
+        user_data: "Introduce los datos de usuario"
+        add_password: "Introduce una contraseña"
+        repeat_password: "Repite contraseña"
+        select_profile: "Elige un perfil"
+        image_text: "Introduce el texto de la imagen"
+        #registered_question: "¿Ya registrado?"
+        #click_here: "Pinche aquí para logearse"
+        #repeat_password: "Repetir contraseña"
+        #two_words: "Escriba dos palabras"
+        researcher: "Soy investigador"
+        company: "Soy empresa"
+        investor: "Soy inversor"
+        signup: "Enviar!"          
+    member:
+      sharings:
+         shared_ok: Post compartido con el proyecto "{{project_name}}"!
+         shared_not_ok: El post ya estaba compartido con el proyecto "{{project_name}}"
+         shared_error: Debes ser miembro del proyecto para compartir posts con ello
+      home:
+        news_in_my_network:
+          created_new_article: "ha publicado un nuevo artículo"
+          title: Novedades en mi red
+          feed_title: Novedades en mi red
+          view_all: Ver todas
+          joined_the_project: se ha unido al proyecto
+          invited_to_the_project: ha sido invitado a unirse al proyecto
+          requested_to_join_the_project: ha solicitado unirse al proyecto
+          registered: se ha registrado
+          created_the_project: ha creado el proyecto
+          started_following_the_project: ha empezado seguir el proyecto
+        hi: Hola
+        view_all: Ver todos
+        invite_contacts: Invita a tus contactos
+        mail_address: Dirección de email
+        unread_messages: NUEVOS MENSAJES
+        from: de
+        date: fecha
+        no_messages: No tienes mensajes
+        new_projects: NUEVOS PROYECTOS
+        init_date: Inicio
+        end_date: Fin
+        no_projects: No hay proyectos
+        new_users: NUEVOS USUARIOS
+        news: NOTICIAS
+        published_at: Publicado el
+        source: Fuente
+        my_projects: MIS PROYECTOS
+        search_project: buscar proyecto
+        my_friends: MIS AMIGOS
+        no_friends: No tienes amigos
+        search_people: buscar personas                                  
+        posts:
+          index:
+            share_with_project: Compartir con tus proyectos
+            comments: comentario(s)        
+      messages:
+        date: "Fecha"
+        status: "Estado"
+        create_new_message: "nuevo mensaje"
+        received: "recibidos"
+        send: "enviados"
+        read: "Leido"
+        unread: "No leido"
+        new_title: "Introduce los datos del mensaje"
+        reading_message: "Leyendo mensaje de"
+        report_abuse: "reportar abuso"
+      groups:
+        edit:
+          title: "Modificar los datos de un grupo"
+          description: "Puede modificar todos los datos que aparecen a continuación de un grupo que ya fue creado."
+        new:
+          title: "Sugerir la creación de un nuevo grupo"
+          description: "Introduce los siguientes datos para poder sugerir un nuevo grupo. Después de esto el administrador decidirá si se acepta o se rechaza dicho grupo."
+          type: "Tipo de grupo"
+          details: "Detalles"
+          #name_text: "Introduce nombre del grupo"
+          separated_by_commas: "Separadas por comas"
+          privated_groups: "(Los grupos privados no aparecen en los listados)"
+          moderated_groups: "(En grupos moderados, cada solicitud que llegue debería ser aprobada por uno de los moderadores del grupo)"
+      
+      posts:
+        new_title: "Nuevo post en tu blog."
+        send: "Guardar!"
+        edit:
+          title: "Editando artículo."
+          tags: "Etiquetas (separadas con ,)" 
+          submit: "Guardar!"
+        index:
+          new_post: "Nuevo artículo" 
+          add_comment: "añadir comentario"
+      profiles:
+        friends:
+          accept: Aceptar
+          reject: Rechazar
+          remove: "Eliminar de mi red social"
+          friends: Amigos
+          followers: Seguidores
+          followings: Fan de
+        milestone_added: "Hito añadido correctamente."
+        milestone_not_added: "Problemas al añadir el hito."
+        milestone_deleted: "Hito borrado."
+        milestone_not_deleted: "Problemas al borrar el hito."
+        milestone_updated: "Hito actualizado correctamente."
+        milestone_not_updated: "Ha habido problemas al actualizar el hito."
+        
+        position_added: "Puesto añadido correctamente"
+        position_not_added: "Problemas al añadir el puesto." 
+        position_deleted: "Puesto borrado."
+        position_not_deleted: "Problemas al borrar el puesto."
+        position_updated: "Puesto actualizado correctamente."
+        position_not_updated: "Ha habido problemas al actualizar el puesto."
+        
+        education_added: "Titulación añadida correctamente."
+        education_not_added: "Problemas al añadir la titulación."        
+        education_deleted: "Titulación laboral borrada."
+        education_not_deleted: "Problemas al borrar la titulación."
+        education_updated: "Titulación actualizado correctamente."
+        education_not_updated: "Ha habido problemas al actualizar la titulación."
+        
+        edit:
+          #title: "Actualizando el perfil"
+          my_profile: "Mi perfil"
+          personal_info: "Información personal"
+          laboral_sector: "Sector laboral"
+          details: "Detalles del perfil"
+          avatar: "Selecciona una nueva imagen, para cambiar tu avatar. Sino, permanecerá inalterada."
+          company_description: "Descripción general"
+          submit: "Actualizar!"
+          from: "De"
+          since: "a"
+          profesional_situation: "Situación profesional"
+          interests_fields: "Áreas de interés"
+          services: "Servicios"
+          contact_info: "Información de contacto"
+          #avatar: "Selecciona "
+          js_title: "Tienes que rellenar el nombre de tu titulación."
+          js_school: "Falta el nombre de tu escuela o Universidad."
+          js_degree: "Debes rellenar el grado."
+          js_position: "Debes introducir un puesto."
+          js_company: "Debes introducir una compañía."
+          js_description: "Debes introducir una descripción."
+          js_milestone_title: "Debes introducir un título para el hito."
+          
+        researcher:
+          position_title: "Experiencia"
+          from: "Fecha de inicio"
+          since: "Fecha de fin"
+          #new: "Añadir nueva experiencia"
+          sector: "Sector"
+          #position: "Cargo"
+          web: "Página web"
+          people: "Gente a tu cargo"
+          submit: "Grabar!"
+          #education_title: "Títulos"
+          new_education: "Añadir nueva titulación"
+          name: "Titulación"
+          country: "País"
+          school: "Escuela o Universidad"
+          degree: "Grado"
+          description: "Descripción"
+          are_you_sure: "¿Estás seguro?"
+        show:
+          users: "/images/header-title/usuarios-es.gif"
+          #birth_date: "Fecha nacimiento:"
+          #tags: "Tags:"
+          send_message: "enviar mensaje"
+          follow_user: "seguir a este usuario"
+          unfollow_user: "dejar de seguir a este usuario"
+          unfollow: "dejar de seguir"
+          invite_project: "invitar a mis proyectos"
+          invite_groups: "invitar a mis grupos"
+          about: "sobre mi"
+          projects: "proyectos"
+          groups: "grupos"
+          friends: "amigos"
+          messages: "mensajes"
+          blog: "blog"
+          photos: "fotos"
+          videos: "videos"
+          links: "enlaces"
+          description: "Mi perfil"
+          company_description: "Descripción general"
+          milestone: "Hitos"
+          professional_info: "Información profesional"
+          company_info: "Información empresarial"
+          sector: "Sector laboral"
+          position: "Puesto de trabajo"
+          #company: "Empresa"
+          employees: "Número de trabajadores:"
+          education: "Formación"
+          professional_experience: "Experiencia profesional"
+          #sector: "Sector:"
+          workers: "Personal a cargo:"
+          interests: "Áreas de interés"
+          services: "Servicios"
+          contact_info: "Información de contacto"
+          contact_address: "Dirección de contacto:"
+          #telephone: "Teléfono:"
+          #mobile: "Teléfono móvil:"
+          #email: "Correo electrónico:"
+          #web: "web:"
+          #blog: "blog:"
+          #msn: "id de MSN:"
+          #skype: "id de Skype:"
+        milestone:
+          section_name: "Hitos en la historia de la empresa"
+          new_milestone: "nuevo hito"
+          when: "Fecha"          
+          title: "Título"
+          description: "Descripción"
+          delete: "Borrar"
+          submit: "Grabar!"
+        education:
+          section_name: "Formación personal" 
+          new_education: "nueva titulación"
+        position:
+          section_name: "Experiencia profesional"
+          new_position: "nueva experiencia"
+      projects:
+        title: Proyecto
+        close: Cerrar proyecto
+        closed: Proyecto cerrado
+        confirm_close: ¿Estás seguro de cerrar el proyecto?
+        invite: Invitar
+        send_invitation: Enviar invitación
+        invited: Invitación enviada
+        already_invited: Ya ha sido invitado y se está esperando su respuesta
+        you_are_not_director: No tienes permisos sobre el proyecto para ejecutar la acción.
+        invitation_accepted: Has aceptado la invitación, ya formas parte del equipo del proyecto
+        invitation_rejected: Has rechazado la invitación para formar parte del equipo del proyecto
+        you_are_not_invited: No tienes invitación para participar en el proyecto
+        participants:
+          site:
+            already_member: Ya eres miembro del proyecto
+            request_waiting: La petición de unión al proyecto está en espera
+            request_received: Petición de unión al proyecto recibida
+            user_accepted: Usuario aceptado
+            user_doesnot_exists: El usuario no existe
+            user_rejected: Usuario rechazado
+            accept: Aceptar
+            reject: Rechazar
+            remove: Eliminar del proyecto
+            user_removed: Usuario eliminado del proyecto
+            pending_requests: Solicitudes pendientes
+          mail:
+            request: Solicitud para unirse a '{{project_name}}'
+            user_request: El usuario ha solicitado unirse al proyecto '{{project_name}}'. 
+            make_decision: Puedes tomar una decisión en la siguiente dirección
+            accepted: Tu solicitud para unirte al proyecto '{{project_name}}' ha sido aceptada
+            hi: Hola {{user}}!
+            request_accepted: Tu solicitud para unirte al proyecto '{{project_name}}' ha sido aceptada
+            visit_on: Puedes consultar información sobre el proyecto en
+            rejected: Tu solicitud para unirte al proyecto '{{project_name}}' ha sido rechazada
+            request_rejected: Tu solicitud para unirte al proyecto '{{project_name}}' ha sido rechazada. Sorry.
+            remove_participation: Has sido expulsado del proyecto '{{project_name}}'      
+        invitation:
+          mail:
+            accept: Para aceptar la invitación pulsa el enlace
+            reject: Para rechazar la invitación pulsa el enlace
+            text: El director del proyecto {{project}} te ha invitado a participar
+            accepted: Invitación al proyecto aceptada
+            rejected: Invitación al proyecto rechazada
+            user_accepted: El usuario {{user}} ha aceptado la invitación para participar en el proyecto {{project}}
+            user_rejected: El usuario {{user}} ha rechazado la invitación para participar en el proyecto {{project}}
+        project_created: Proyecto creado con éxito       
+        follower:
+          received: Tu solicitud ha sido recibida. El director del proyecto tomará una decisión en breve
+          error: Algo fué mal con tu solicitud. Por favor, contacta al director del proyecto directamente por email
+          accept: Aceptar
+          reject: Rechazar
+          remove: Eliminar
+          accepted: El usuario '{{user}}' ha sido aceptado como seguidor del proyecto
+          rejected: El usuario '{{user}}' ha sido rechazado como seguidor del proyecto
+          removed: El usuario '{{user}}' ha sido eliminado como seguidor del proyecto
+          message:
+            accepted:
+              subject: Tu solicitud para seguir el proyecto '{{project_name}}' ha sido aceptada
+              content: ¡Felicidades!
+            rejected:
+              subject: Tu solicitud para seguir el proyecto '{{project_name}}' ha sido rechazada
+              content: ¡Lo sentimos!   
+
+        new:
+          page_title: Nuevo proyecto
+          name: Nombre
+          summary: Resumen
+          industry: Industria
+          category: Categoría
+          region: Región
+          budget: Presupuesto
+          logo: Logo
+          start_date: Fecha de inicio
+          investor_needed: Inversión necesitada
+          required_investment: Inversión requerida
+          tags: Etiquetas
+          create_project: Crear proyecto
+        edit:
+          title: Editar proyecto
+          name: Nombre
+          name: Nombre
+          summary: Resumen
+          industry: Industria
+          category: Categoría
+          region: Región
+          budget: Presupuesto
+          logo: Logo
+          start_date: Fecha de inicio
+          investor_needed: Inversión necesitada
+          required_investment: Inversión requerida
+          tags: Etiquetas            
+          update_project: Actualizar
+        update:
+          project_updated: El proyecto ha sido actualizado.
+        followings:
+          new:
+            create_following: Crear          
