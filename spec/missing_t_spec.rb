@@ -20,7 +20,7 @@ describe "MissingT" do
        "lamp"=>"lampe",
        "book"=>"livre",
        "handkerchief"=>"mouchoir",
-       "mother" => "mere"}}    
+       "mother" => "mere"}}
   end
 
   describe "adding translations" do
@@ -51,16 +51,16 @@ describe "MissingT" do
       @h.should have_nested_key('fr.zoo.elephant')
       @h.should have_nested_key('fr.book')
     end
-    
+
     it "should return false when it does not have a nested key" do
       @h.should_not have_nested_key('fr.zoo.seal')
       @h.should_not have_nested_key('xxx')
     end
-    
+
     it "an empty hash should not have any nested keys" do
       {}.should_not have_nested_key(:puppy)
     end
-    
+
     it "should turn strings to hash keys along their separators (dots)" do
       ["zoo", "lamp", "mother"].all? { |k| @queries_hash.key?(k) }.should == true
       ["bee", "departments"].all? { |k| @queries_hash["zoo"].key?(k) }.should == true
@@ -68,7 +68,26 @@ describe "MissingT" do
       @queries_hash["zoo"]["departments"].should have_key("qa")
     end
   end
-  
+
+  describe "extracting i18n queries" do
+    before do
+      content = <<-EOS
+        <div class="title_gray"><span><%= I18n.t("anetcom.member.projects.new.page_title") %></span></div>
+        <%= submit_tag I18n.t('anetcom.member.projects.new.create_project'), :class => 'button' %>
+      EOS
+      $stubba = Mocha::Central.new
+      @missing_t.stubs(:get_content_of_file_with_i18n_queries).returns(content)
+    end
+
+    it "should extract the I18n queries correctly when do" do
+      i18n_queries = @missing_t.extract_i18n_queries(nil)
+      i18n_queries.should == ["anetcom.member.projects.new.page_title", "anetcom.member.projects.new.create_project"]
+    end
+
+    # it "should prepend the language to the returned"
+
+  end
+
   describe "finding missing translations" do
     before do
       @t_queries = ["mother", "zoo.bee", "zoo.wasp", "pen"]
@@ -88,7 +107,7 @@ describe "MissingT" do
       @missing_t.has_translation?("fr", "zoo.bee").should == false
       @missing_t.has_translation?("es", "mother").should == false
     end
-    
+
     it "should correctly get missing translations for a spec. language" do
       miss_entries = @missing_t.get_missing_translations("fr")
       ["fr.mother, zoo.bee, zoo.wasp, pen"]

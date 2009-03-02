@@ -17,23 +17,23 @@ end
 class MissingT
   extend Forwardable
   def_delegators :@translations, :[]
-  
+
   # attr_reader :translations
-  
+
   def initialize
     @translations = Hash.new
   end
-  
+
   # NOTE: this method is needed(?) to be able to
   # able to stub it out
   def translations
     @translations
   end
-  
+
   def add_translations(translations)
-    @translations.merge!(translations)    
+    @translations.merge!(translations)
   end
-  
+
   def collect_translations
     Dir.glob("locales/**/*.yml") do |file|
       add_translations(translations_in_file(file))
@@ -52,23 +52,47 @@ class MissingT
       end
     h
   end
-  
+
   def translations_in_file(yaml_file)
     open(yaml_file) { |f| YAML.load(f.read) }
   end
 
-  def collect_translation_queries
+  def with_files_with_i18n_queries
+    Dir.glob("app/**/*.erb") do |file|
+      yield file
+    end
   end
-  
+
+  def files_with_i18n_queries
+    Dir.glob("app/**/*.erb")
+  end
+
+  def get_content_of_file_with_i18n_queries(file)
+    f = open(File.expand_path(file), "r")
+    f.read()
+  end
+
+  def extract_i18n_queries(file)
+    i18n_query_pattern = /I18n\.(?:translate|t)\s*\((.*)\)/
+    get_content_of_file_with_i18n_queries(file).
+      scan(i18n_query_pattern).map { |match| match.first.gsub(/[^\w\.]/, '') }
+  end
+
+  def collect_translation_queries
+    files_with_i18n_queries.map do |file|
+      extract_i18n_queries(file)
+    end
+  end
+
   def has_translation?(lang, query)
     t = translations
     (lang + '.' + query).split('.').each do |segment|
       return false unless t.key?(segment)
       t = t[segment]
     end
-    true    
+    true
   end
-  
+
   def get_missing_translations(lang=nil)
     languages = lang.nil? ? translations.keys : [lang]
     languages.map do |l|
@@ -77,7 +101,7 @@ class MissingT
       end
     end.flatten
   end
-    
+
   private
     def get_missing_translations_for_lang(lang, queries)
       raise Exception, "There are no translations in #{lang}" unless translations.key?(lang)
@@ -86,7 +110,7 @@ class MissingT
         # pp "XXX Checking if #{translations[lang].inspect} has nested key #{q.inspect}: #{translations[lang].has_nested_key?(q)}"
         !translations[lang].has_nested_key?(q)
       end
-    
+
     end
-  
+
 end
