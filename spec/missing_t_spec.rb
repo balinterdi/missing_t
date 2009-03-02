@@ -4,7 +4,7 @@ require "spec"
 require "mocha"
 require "pp"
 
-require File.join(File.dirname(__FILE__), '..', 'missing_t')
+require File.join(File.dirname(__FILE__), 'spec_helper')
 
 describe "MissingT" do
   before do
