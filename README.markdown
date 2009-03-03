@@ -40,6 +40,6 @@ If you wish to see all the lacking translations for a certain language, just pro
 
 That's all about it, let me know if you find any bugs or have suggestions as to what else should the script do. If you wish you can directly contact me at balint.erdi@gmail.com.
 
-http://github.com/balinterdi/missing_t/
+[http://github.com/balinterdi/missing_t/](http://github.com/balinterdi/missing_t/)
 
 Copyright (c) 2009 Balint Erdi, released under the MIT license

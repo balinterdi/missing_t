@@ -1,8 +1,6 @@
 require "rubygems"
-require "ruby-debug"
 require "spec"
 require "mocha"
-require "pp"
 
 require File.join(File.dirname(__FILE__), 'spec_helper')
 

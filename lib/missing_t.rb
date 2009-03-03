@@ -1,7 +1,5 @@
 require "yaml"
 require "forwardable"
-require "pp"
-require "ruby-debug"
 
 class Hash
   def has_nested_key?(key)
