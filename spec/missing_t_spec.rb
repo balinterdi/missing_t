@@ -139,6 +139,17 @@ describe "MissingT" do
     end
 
     it "should find several messages on the same line" do
+      content = <<-EOS
+      <div class="title_gray"><span><%= t("anetcom.member.projects.new.page_title") %></span><span>t("anetcom.member.projects.new.page_size")</span></div>
+      EOS
+      @missing_t.extract_i18n_queries(content).should == ["anetcom.member.projects.new.page_title", "anetcom.member.projects.new.page_size"]
+    end
+
+    it "should find messages with a parens-less call" do
+      content = <<-EOS
+        <div class="title_gray"><span><%= t "anetcom.member.projects.new.page_title" %></span></div>
+      EOS
+      @missing_t.extract_i18n_queries(content).should == ["anetcom.member.projects.new.page_title"]
     end
 
     it "should not extract a function call that just ends in t" do
