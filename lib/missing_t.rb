@@ -95,7 +95,7 @@ class MissingT
   end
 
   def extract_i18n_queries(file)
-    i18n_query_pattern = /I18n\.(?:translate|t)\s*\((.*?)[,\)]/
+    i18n_query_pattern = /[^\w]+(?:I18n\.translate|I18n\.t|translate|t)\s*\((.*?)[,\)]/
     get_content_of_file_with_i18n_queries(file).
       scan(i18n_query_pattern).map { |match| match.first.gsub(/[^\w\.]/, '') }
   end
