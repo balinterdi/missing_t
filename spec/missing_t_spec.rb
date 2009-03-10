@@ -83,7 +83,7 @@ describe "MissingT" do
     end
   end
 
-  describe "extracting i18n queries" do
+  describe "the i18n query extracion" do
     before do
       $stubba = Mocha::Central.new
       metaclass = class << @missing_t; self; end
@@ -110,7 +110,7 @@ describe "MissingT" do
 
     it "should correctly extract the I18n.t type of messages from a link_to" do
       # honestly, I am not sure anymore why this qualifies as a sep. test case
-      # but I am sure there was something special about that one :)
+      # but I am sure there was something special about this one :)
       content = <<-EOS
         <%= link_to I18n.t("tog_headlines.admin.publish"), publish_admin_headlines_story_path(story), :class => 'button' %>
       EOS
@@ -159,6 +159,11 @@ describe "MissingT" do
       @missing_t.extract_i18n_queries(content).should == []
     end
 
+    it "should find and correctly extract a dynamic key translation message" do
+      # @missing_t.stubs(:get_content_of_file_with_i18n_queries).returns(content)
+      content = %q(<div class="title_gray"><span><%= I18n.t("mycompany.welcome.#{key}") %></span></div>)
+      @missing_t.extract_i18n_queries(content).should == [%q(mycompany.welcome.#{key})]
+    end
 
   end
 
