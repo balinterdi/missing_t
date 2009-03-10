@@ -34,7 +34,22 @@ class Hash
 
 end
 
+module Helpers
+  # snatched from rspec source
+  def colour(text, colour_code)
+    "#{colour_code}#{text}\e[0m"
+  end
+
+  def green(text); colour(text, "\e[32m"); end
+  def red(text); colour(text, "\e[31m"); end
+  def magenta(text); colour(text, "\e[35m"); end
+  def yellow(text); colour(text, "\e[33m"); end
+  def blue(text); colour(text, "\e[34m"); end
+
+end
+
 class MissingT
+  include Helpers
   extend Forwardable
   def_delegators :@translations, :[]
 
@@ -160,12 +175,14 @@ class MissingT
 end
 
 if __FILE__ == $0
-  # puts "ARGV[1] = #{ARGV[0]}"
   # pp MissingT.new.find_missing_translations(ARGV[0]).values.inject(0) { |sum, qs| sum + qs.length }
-  MissingT.new.find_missing_translations(ARGV[0]).each do |file, queries|
+  @missing_t = MissingT.new
+  @missing_t.instance_eval do
+    find_missing_translations(ARGV[0]).each do |file, queries|
     puts
     puts "#{file}:"
     puts
-    queries.each { |q| puts "    #{q}" }
+    queries.each { |q| puts "    #{red(q)}" }
+    end
   end
 end

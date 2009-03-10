@@ -4,11 +4,13 @@ $LOAD_PATH.unshift(File.expand_path(File.dirname(__FILE__) + "/../lib"))
 
 require 'missing_t'
 
-MissingT.new.find_missing_translations(ARGV[0]).each do |file, queries|
+@missing_t = MissingT.new
+@missing_t.instance_eval do
+  find_missing_translations(ARGV[0]).each do |file, queries|
   puts
   puts "#{file}:"
   puts
-  queries.each { |q| puts "    #{q}" }
+  queries.each { |q| puts "    #{red(q)}" }
+  end
 end
-
 
