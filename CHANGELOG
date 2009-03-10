@@ -1,3 +1,5 @@
+v0.1.2 Extraction of I18n messages became better (will now correctly extract messages with dynamic keys, like "myapp.title.#{key}"). Added colorization of output.
+
 v0.1.1 Remove dependencies to ruby-debug and pp.
 
 v0.1.0 I am alive!
