@@ -4,6 +4,12 @@ require "mocha"
 
 require File.join(File.dirname(__FILE__), 'spec_helper')
 
+# use mocha for mocking instead of
+# Rspec's own mock framework
+Spec::Runner.configure do |config|
+  config.mock_with :mocha
+end
+
 describe "MissingT" do
   before do
     @missing_t = MissingT.new
@@ -85,7 +91,6 @@ describe "MissingT" do
 
   describe "the i18n query extracion" do
     before do
-      $stubba = Mocha::Central.new
       metaclass = class << @missing_t; self; end
       metaclass.instance_eval do
         define_method :get_content_of_file_with_i18n_queries do |content|
