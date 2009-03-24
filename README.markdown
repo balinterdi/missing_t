@@ -7,11 +7,11 @@ Missing T provides an easy way to see which internationalized messages lack thei
 Missing T comes packaged as a gem, and is hosted on github. If you have not already done so, first add gems.github.com as a rubygems source:
 
     $ gem sources -a http://gems.github.com
-    
+
 And then install the gem itself:
 
     $ gem install balinterdi-missing_t
-    
+
 Also, if you prefer to use it as a plugin to Rails project, you can simply do the following:
 
     $ ./script/plugin install git://github.com/balinterdi/missing_t.git
@@ -28,14 +28,16 @@ You should see all messages that don't have translations on the screen, broken d
         fr.users.name
         fr.users.city_of_residence
         es.users.age
-        
+
     app/helpers/user_helper.rb:
         fr.users.travels
-        
+
+__NOTE__ If no language code is provided, the script will determine which languages need to have translations by gathering all language codes in the localization files and assuming that if there is at least one translation defined for a language then all translations should be defined for it.
+
 If you wish to see all the lacking translations for a certain language, just provide its language code as a parameter:
 
     $ missing_t fr
-    
+
 ## Epilogue
 
 That's all about it, let me know if you find any bugs or have suggestions as to what else should the script do. If you wish you can directly contact me at balint.erdi@gmail.com.
