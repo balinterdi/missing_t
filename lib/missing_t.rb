@@ -124,6 +124,7 @@ class MissingT
 
   def files_with_i18n_queries
     if path = @options.path
+      path = path[0...-1] if path[-1..-1] == '/'
       [ Dir.glob("#{path}/**/*.erb"), Dir.glob("#{path}/**/*.rb") ]
     else
       [ Dir.glob("app/**/*.erb"),
