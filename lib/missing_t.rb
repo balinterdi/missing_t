@@ -1,4 +1,6 @@
 require "yaml"
+require "optparse"
+require "ostruct"
 require "forwardable"
 
 class Hash
@@ -59,6 +61,30 @@ class MissingT
     @translations = Hash.new
   end
 
+  def parse_options(args)
+    @options = OpenStruct.new
+    @options.prefix = nil
+    opts = OptionParser.new do |opts|
+      opts.on("-f", "--file FILE_OR_DIR",
+              "look for missing translations in files under FILE_OR_DIR",
+              "(if a file is given, only look in that file)") do |path|
+        @options.path = path
+      end
+    end
+
+    opts.on_tail("-h", "--help", "Show this message") do
+      puts opts
+      exit
+    end
+
+    opts.on_tail("--version", "Show version") do
+      puts "0.1.2"
+      exit
+    end
+
+    opts.parse!(args)
+  end
+
   # NOTE: this method is needed
   # because attr_reader :translations
   # does not seem to be stubbable
@@ -97,9 +123,13 @@ class MissingT
   end
 
   def files_with_i18n_queries
-    [ Dir.glob("app/**/*.erb"),
-    Dir.glob("app/**/controllers/**/*.rb"),
-    Dir.glob("app/**/helpers/**/*.rb")].flatten
+    if path = @options.path
+      [ Dir.glob("#{path}/**/*.erb"), Dir.glob("#{path}/**/*.rb") ]
+    else
+      [ Dir.glob("app/**/*.erb"),
+      Dir.glob("app/**/controllers/**/*.rb"),
+      Dir.glob("app/**/helpers/**/*.rb")]
+    end.flatten
   end
 
   def get_content_of_file_with_i18n_queries(file)
@@ -178,7 +208,8 @@ if __FILE__ == $0
   # pp MissingT.new.find_missing_translations(ARGV[0]).values.inject(0) { |sum, qs| sum + qs.length }
   @missing_t = MissingT.new
   @missing_t.instance_eval do
-    find_missing_translations(ARGV[0]).each do |file, queries|
+    parse_options(ARGV)
+    find_missing_translations(ARGV[-1]).each do |file, queries|
     puts
     puts "#{file}:"
     puts
