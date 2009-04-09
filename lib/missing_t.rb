@@ -163,7 +163,7 @@ class MissingT
   def has_translation?(lang, query)
     t = translations
     i18n_label(lang, query).split('.').each do |segment|
-      return false unless (t.respond_to?(:key?) and t.key?(segment))
+      return false unless segment =~ /#\{.*\}/ or (t.respond_to?(:key?) and t.key?(segment))
       t = t[segment]
     end
     true
