@@ -5,7 +5,10 @@ $LOAD_PATH.unshift(File.expand_path(File.dirname(__FILE__) + "/../lib"))
 require 'missing_t'
 
 @missing_t = MissingT.new
+
+@missing_t = MissingT.new
 @missing_t.instance_eval do
+  parse_options(ARGV)
   find_missing_translations(ARGV[0]).each do |file, queries|
   puts
   puts "#{file}:"

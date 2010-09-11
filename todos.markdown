@@ -1,3 +1,6 @@
+DONE
+----
+
 * for message strings with dynamic parts, check if there is any translation that matches the non-dynamic part. Only output the message if none found. E.g
 
     user.friendships.make.#{action}

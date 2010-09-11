@@ -1,16 +1,12 @@
 # Missing T
 
-Missing T provides an easy way to see which internationalized messages lack their translations in a ruby project that uses I18n (e.g Rails apps)
+Missing T provides an easy way to see which internationalized messages lack their translations in a ruby project that uses I18n (e.g Rails apps). Instead of going through the translation files manually, you just call Missing T which gives you a list of all missing translation strings. By default it searches for all languages that you have translation files for. If you given it an option it will only search for translations in that language.
 
 ## Installation
 
-Missing T comes packaged as a gem, and is hosted on github. If you have not already done so, first add gems.github.com as a rubygems source:
+Missing T comes packaged as a gem, so you install it via the normal procedure:
 
-    $ gem sources -a http://gems.github.com
-
-And then install the gem itself:
-
-    $ gem install balinterdi-missing_t
+    $ gem install missing_t
 
 Also, if you prefer to use it as a plugin to Rails project, you can simply do the following:
 
