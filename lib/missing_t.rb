@@ -51,6 +51,9 @@ module Helpers
 end
 
 class MissingT
+
+  VERSION = "0.3.0"
+
   include Helpers
   extend Forwardable
   def_delegators :@translations, :[]
