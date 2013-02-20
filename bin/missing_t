@@ -4,16 +4,27 @@ $LOAD_PATH.unshift(File.expand_path(File.dirname(__FILE__) + "/../lib"))
 
 require 'missing_t'
 
-@missing_t = MissingT.new
-
-@missing_t = MissingT.new
-@missing_t.instance_eval do
-  parse_options(ARGV)
-  find_missing_translations(ARGV[0]).each do |file, queries|
-  puts
-  puts "#{file}:"
-  puts
-  queries.each { |q| puts "    #{red(q)}" }
+def hashify(strings)
+  strings.map { |s| s.split('.') }.each_with_object({}) do |segmented_string, h|
+    segmented_string.each do |segment|
+      h[segment] ||= {}
+      h = h[segment]
+    end
   end
 end
 
+def print_hash(h, level)
+  h.each_pair do |k,v|
+    puts %(#{" " * (level*2)}#{k}:)
+    print_hash(v, level+1)
+  end
+end
+
+missing_t = MissingT.new
+missing_t.parse_options(ARGV)
+missing_t.find_missing_translations(ARGV.first).each do |file, queries|
+  puts
+  puts "#{file}:"
+  puts
+  print_hash(hashify(queries), 1)
+end

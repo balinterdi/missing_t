@@ -108,19 +108,6 @@ class MissingT
     end
   end
 
-  def hashify(strings)
-    h = Hash.new
-    strings.map { |s| s.split('.') }.
-      each do |segmented_string|
-        root = h
-        segmented_string.each do |segment|
-          root[segment] ||= {}
-          root = root[segment]
-        end
-      end
-    h
-  end
-
   def translations_in_file(yaml_file)
     open(yaml_file) { |f| YAML.load(f.read) }
   end
@@ -181,7 +168,9 @@ class MissingT
 
   def find_missing_translations(lang=nil)
     collect_translations
-    get_missing_translations(collect_translation_queries, lang ? [lang] : translations.keys)
+    missing_translations = get_missing_translations(collect_translation_queries, lang ? [lang] : translations.keys)
+    p missing_translations
+    missing_translations
   end
 
   private
