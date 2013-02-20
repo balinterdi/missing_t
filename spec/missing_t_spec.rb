@@ -188,7 +188,7 @@ describe "MissingT" do
       @missing_t.has_translation?("fr", "zoo.bee").should == false
       @missing_t.has_translation?("es", "mother").should == false
     end
-    
+
     describe "of dynamic message strings" do
       it "should return true if it has a translation that matches the fix parts" do
         @missing_t.has_translation?("fr", %q(zoo.#{animal})).should == true
@@ -196,7 +196,7 @@ describe "MissingT" do
 
       it "should return false if it does not have a translation that matches all the fix parts" do
         @missing_t.has_translation?("fr", %q(household.#{animal})).should == false
-      end      
+      end
     end
 
     it "should correctly get missing translations for a spec. language" do

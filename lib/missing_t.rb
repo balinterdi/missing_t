@@ -81,7 +81,7 @@ class MissingT
     end
 
     opts.on_tail("--version", "Show version") do
-      puts "0.1.2"
+      puts VERSION
       exit
     end
 
@@ -152,14 +152,12 @@ class MissingT
   end
 
   def collect_translation_queries
-    queries = {}
-    files_with_i18n_queries.each do |file|
+    files_with_i18n_queries.each_with_object({}) do |file, queries|
       queries_in_file = extract_i18n_queries(file)
-      unless queries_in_file.empty?
+      if queries_in_file.any?
         queries[file] = queries_in_file
       end
     end
-    queries
     #TODO: remove duplicate queries across files
   end
 
@@ -172,21 +170,18 @@ class MissingT
     true
   end
 
-  def get_missing_translations(queries, lang=nil)
-    missing = {}
-    languages = lang.nil? ? translations.keys : [lang]
-    languages.each do |l|
-      get_missing_translations_for_lang(queries, l).each do |file, qs|
+  def get_missing_translations(queries, languages)
+    languages.each_with_object({}) do |lang, missing|
+      get_missing_translations_for_lang(queries, lang).each do |file, queries|
         missing[file] ||= []
-        missing[file].concat(qs).uniq!
+        missing[file].concat(queries).uniq!
       end
     end
-    missing
   end
 
   def find_missing_translations(lang=nil)
     collect_translations
-    get_missing_translations(collect_translation_queries, lang)
+    get_missing_translations(collect_translation_queries, lang ? [lang] : translations.keys)
   end
 
   private
