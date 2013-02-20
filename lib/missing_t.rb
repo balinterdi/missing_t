@@ -168,9 +168,7 @@ class MissingT
 
   def find_missing_translations(lang=nil)
     collect_translations
-    missing_translations = get_missing_translations(collect_translation_queries, lang ? [lang] : translations.keys)
-    p missing_translations
-    missing_translations
+    get_missing_translations(collect_translation_queries, lang ? [lang] : translations.keys)
   end
 
   private

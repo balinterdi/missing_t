@@ -22,9 +22,14 @@ end
 
 missing_t = MissingT.new
 missing_t.parse_options(ARGV)
-missing_t.find_missing_translations(ARGV.first).each do |file, queries|
+missing_message_strings = missing_t.find_missing_translations(ARGV.first).values.map { |ms| hashify(ms) }
+
+missing = missing_message_strings.each_with_object({}) do |h, all_message_strings|
+  all_message_strings.deep_safe_merge!(h)
+end
+
+missing.each do |language, missing_for_language|
   puts
-  puts "#{file}:"
-  puts
-  print_hash(hashify(queries), 1)
+  puts "#{language}:"
+  print_hash(missing_for_language, 1)
 end
