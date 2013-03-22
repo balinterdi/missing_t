@@ -26,36 +26,7 @@ describe "MissingT" do
     @yet_other_es_translations = { "es" => {"zoo" => {"monkey" => "mono", "horse" => "caballo"}}}
   end
 
-  describe "adding translations" do
-    before do
-      @missing_t.add_translations(@es_translations)
-    end
-
-    it "should pick up the new translations" do
-      @missing_t.translations.should == @es_translations
-    end
-
-    it "should correctly merge different translations" do
-      @missing_t.add_translations(@fr_translations)
-      @missing_t["fr"]["zoo"].should have_key("wasp")
-      @missing_t["fr"].should have_key("mother")
-      @missing_t["es"]["zoo"].should have_key("bee")
-    end
-
-    it "should not overwrite translations keys" do
-      @missing_t.add_translations(@other_es_translations)
-      @missing_t["es"]["zoo"].should have_key("bear")
-      @missing_t["es"]["zoo"].should have_key("bee")
-    end
-
-    it "should add the new translations even if they contain keys already in the translations hash" do
-      @missing_t.add_translations(@yet_other_es_translations)
-      @missing_t["es"]["zoo"].should have_key("monkey")
-      @missing_t["es"]["zoo"].should have_key("bear")
-    end
-
-  end
-
+  #TODO: Refactor overcomplicated test setup and thus the actual design of the code
   describe "the i18n query extracion" do
     before do
       metaclass = class << @missing_t; self; end
@@ -132,7 +103,6 @@ describe "MissingT" do
     end
 
     it "should find and correctly extract a dynamic key translation message" do
-      # @missing_t.stubs(:get_content_of_file_with_i18n_queries).returns(content)
       content = %q(<div class="title_gray"><span><%= I18n.t("mycompany.welcome.#{key}") %></span></div>)
       @missing_t.extract_i18n_queries(content).should == [%q(mycompany.welcome.#{key})]
     end
@@ -142,31 +112,11 @@ describe "MissingT" do
   describe "finding missing translations" do
     before do
       @t_queries = { :fake_file => ["mother", "zoo.bee", "zoo.wasp", "pen"] }
-      @missing_t.stubs(:translations).returns(@fr_translations.merge(@es_translations))
-      @missing_t.stubs(:collect_translation_queries).returns(@t_queries)
+      @missing_t.stubs(:translation_keys).returns(@fr_translations.merge(@es_translations))
+      @missing_t.stubs(:translation_queries).returns(@t_queries)
     end
 
-    it "should return true if it has a translation given in the I18n form" do
-      @missing_t.has_translation?("fr", "zoo.wasp").should == true
-      @missing_t.has_translation?("es", "pen").should == true
-    end
-
-    it "should return false if it does not have a translation given in the I18n form" do
-      @missing_t.has_translation?("fr", "zoo.bee").should == false
-      @missing_t.has_translation?("es", "mother").should == false
-    end
-
-    describe "of dynamic message strings" do
-      it "should return true if it has a translation that matches the fix parts" do
-        @missing_t.has_translation?("fr", %q(zoo.#{animal})).should == true
-      end
-
-      it "should return false if it does not have a translation that matches all the fix parts" do
-        @missing_t.has_translation?("fr", %q(household.#{animal})).should == false
-      end
-    end
-
-    it "should correctly get missing translations for a spec. language" do
+    it "should correctly get missing translations for a specific language" do
       miss_entries = @missing_t.find_missing_translations("fr").map{ |e| e[1] }.flatten
       miss_entries.should include("fr.pen")
       miss_entries.should include("fr.zoo.bee")

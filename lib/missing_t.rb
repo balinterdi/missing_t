@@ -55,14 +55,6 @@ class MissingT
   VERSION = "0.3.1"
 
   include Helpers
-  extend Forwardable
-  def_delegators :@translations, :[]
-
-  # attr_reader :translations
-
-  def initialize
-    @translations = Hash.new
-  end
 
   def parse_options(args)
     @options = OpenStruct.new
@@ -88,23 +80,12 @@ class MissingT
     opts.parse!(args)
   end
 
-  # NOTE: this method is needed
-  # because attr_reader :translations
-  # does not seem to be stubbable
-  def translations
-    @translations
-  end
-
-  def add_translations(trs)
-    translations.deep_safe_merge!(trs)
-  end
-
-  def collect_translations
+  def translation_keys
     locales_pathes = ["config/locales/**/*.yml", "vendor/plugins/**/config/locales/**/*yml", "vendor/plugins/**/locale/**/*yml"]
     locales_pathes.each_with_object({}) do |path, translations|
       Dir.glob(path) do |file|
         t = open(file) { |f| YAML.load(f.read) }
-        translations.add_translations(translations)
+        translations.deep_safe_merge!(t)
       end
     end
   end
@@ -131,11 +112,13 @@ class MissingT
     i18n_query_pattern = /[^\w]+(?:I18n\.translate|I18n\.t|translate|t)\s*\((.*?)[,\)]/
     i18n_query_no_parens_pattern = /[^\w]+(?:I18n\.translate|I18n\.t|translate|t)\s+(['"])(.*?)\1/
     file_content = get_content_of_file_with_i18n_queries(file)
-    file_content.scan(i18n_query_pattern).map { |match| match.first.gsub(/['"\s]/, '') }.
-      concat(file_content.scan(i18n_query_no_parens_pattern).map { |match| match[1].gsub(/['"\s]/, '') })
+    ([]).tap do |i18n_message_strings|
+      i18n_message_strings << file_content.scan(i18n_query_pattern).map { |match| match[0].gsub(/['"\s]/, '') }
+      i18n_message_strings << file_content.scan(i18n_query_no_parens_pattern).map { |match| match[1].gsub(/['"\s]/, '') }
+    end.flatten
   end
 
-  def collect_translation_queries
+  def translation_queries
     files_with_i18n_queries.each_with_object({}) do |file, queries|
       queries_in_file = extract_i18n_queries(file)
       if queries_in_file.any?
@@ -145,18 +128,17 @@ class MissingT
     #TODO: remove duplicate queries across files
   end
 
-  def has_translation?(lang, query)
-    t = translations
+  def has_translation?(keys, lang, query)
     i18n_label(lang, query).split('.').each do |segment|
-      return false unless segment =~ /#\{.*\}/ or (t.respond_to?(:key?) and t.key?(segment))
-      t = t[segment]
+      return false unless segment =~ /#\{.*\}/ or (keys.respond_to?(:key?) and keys.key?(segment))
+      keys = keys[segment]
     end
     true
   end
 
-  def get_missing_translations(queries, languages)
+  def get_missing_translations(keys, queries, languages)
     languages.each_with_object({}) do |lang, missing|
-      get_missing_translations_for_lang(queries, lang).each do |file, queries|
+      get_missing_translations_for_lang(keys, queries, lang).each do |file, queries|
         missing[file] ||= []
         missing[file].concat(queries).uniq!
       end
@@ -164,14 +146,14 @@ class MissingT
   end
 
   def find_missing_translations(lang=nil)
-    collect_translations
-    get_missing_translations(collect_translation_queries, lang ? [lang] : translations.keys)
+    ts = translation_keys
+    get_missing_translations(translation_keys, translation_queries, lang ? [lang] : ts.keys)
   end
 
   private
-    def get_missing_translations_for_lang(queries, lang)
+    def get_missing_translations_for_lang(keys, queries, lang)
       queries.map do |file, queries_in_file|
-        queries_with_no_translation = queries_in_file.select { |q| !has_translation?(lang, q) }
+        queries_with_no_translation = queries_in_file.select { |q| !has_translation?(keys, lang, q) }
         if queries_with_no_translation.empty?
           nil
         else
