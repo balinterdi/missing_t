@@ -1,12 +1,8 @@
-require "rubygems"
-require "spec"
-require "mocha"
-
-require File.join(File.dirname(__FILE__), 'spec_helper')
+require 'spec_helper'
 
 # use mocha for mocking instead of
 # Rspec's own mock framework
-Spec::Runner.configure do |config|
+RSpec.configure do |config|
   config.mock_with :mocha
 end
 
@@ -58,35 +54,6 @@ describe "MissingT" do
       @missing_t["es"]["zoo"].should have_key("bear")
     end
 
-  end
-
-  describe "hashification" do
-    before do
-      queries = ["zoo.bee", "zoo.departments.food", "zoo.departments.qa", "lamp", "mother", "mother.maiden_name"]
-      @queries_hash = @missing_t.hashify(queries)
-      @h = { "fr" => { "book" => "livre", "zoo" => {"elephant" => "elephant"} } }
-    end
-
-    it "should find a nested key and return it" do
-      @h.should have_nested_key('fr.zoo.elephant')
-      @h.should have_nested_key('fr.book')
-    end
-
-    it "should return false when it does not have a nested key" do
-      @h.should_not have_nested_key('fr.zoo.seal')
-      @h.should_not have_nested_key('xxx')
-    end
-
-    it "an empty hash should not have any nested keys" do
-      {}.should_not have_nested_key(:puppy)
-    end
-
-    it "should turn strings to hash keys along their separators (dots)" do
-      ["zoo", "lamp", "mother"].all? { |k| @queries_hash.key?(k) }.should == true
-      ["bee", "departments"].all? { |k| @queries_hash["zoo"].key?(k) }.should == true
-      @queries_hash["zoo"]["departments"].should have_key("food")
-      @queries_hash["zoo"]["departments"].should have_key("qa")
-    end
   end
 
   describe "the i18n query extracion" do
@@ -176,7 +143,7 @@ describe "MissingT" do
     before do
       @t_queries = { :fake_file => ["mother", "zoo.bee", "zoo.wasp", "pen"] }
       @missing_t.stubs(:translations).returns(@fr_translations.merge(@es_translations))
-      # @missing_t.stubs(:collect_translation_queries).returns(@t_queries)
+      @missing_t.stubs(:collect_translation_queries).returns(@t_queries)
     end
 
     it "should return true if it has a translation given in the I18n form" do
@@ -200,13 +167,13 @@ describe "MissingT" do
     end
 
     it "should correctly get missing translations for a spec. language" do
-      miss_entries = @missing_t.get_missing_translations(@t_queries, "fr").map{ |e| e[1] }.flatten
+      miss_entries = @missing_t.find_missing_translations("fr").map{ |e| e[1] }.flatten
       miss_entries.should include("fr.pen")
       miss_entries.should include("fr.zoo.bee")
     end
 
     it "should correctly get missing translations" do
-      miss_entries = @missing_t.get_missing_translations(@t_queries).map{ |e| e[1] }.flatten
+      miss_entries = @missing_t.find_missing_translations.map{ |e| e[1] }.flatten
       miss_entries.should include("fr.zoo.bee")
       miss_entries.should include("fr.pen")
       miss_entries.should include("es.zoo.wasp")

@@ -101,15 +101,12 @@ class MissingT
 
   def collect_translations
     locales_pathes = ["config/locales/**/*.yml", "vendor/plugins/**/config/locales/**/*yml", "vendor/plugins/**/locale/**/*yml"]
-    locales_pathes.each do |path|
+    locales_pathes.each_with_object({}) do |path, translations|
       Dir.glob(path) do |file|
-        add_translations(translations_in_file(file))
+        t = open(file) { |f| YAML.load(f.read) }
+        translations.add_translations(translations)
       end
     end
-  end
-
-  def translations_in_file(yaml_file)
-    open(yaml_file) { |f| YAML.load(f.read) }
   end
 
   def files_with_i18n_queries
