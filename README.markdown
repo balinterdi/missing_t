@@ -1,4 +1,5 @@
 # Missing T
+[![Code Climate](https://codeclimate.com/github/balinterdi/missing_t.png)](https://codeclimate.com/github/balinterdi/missing_t)
 
 Missing T provides an easy way to see which internationalized messages lack their translations in a ruby project that uses I18n (e.g Rails apps). Instead of going through the translation files manually, you just call Missing T which gives you a list of all missing translation strings. By default it searches for all languages that you have translation files for. If you given it an option it will only search for translations in that language.
 
@@ -40,4 +41,4 @@ That's all about it, let me know if you find any bugs or have suggestions as to 
 
 [http://github.com/balinterdi/missing_t/](http://github.com/balinterdi/missing_t/)
 
-Copyright (c) 2009 Balint Erdi, released under the MIT license
+Copyright (c) 2009-2013 Balint Erdi, released under the MIT license
