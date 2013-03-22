@@ -96,11 +96,19 @@ class MissingT
   def files_with_i18n_queries
     if path = @options.path
       path = path[0...-1] if path[-1..-1] == '/'
-      [ Dir.glob("#{path}/**/*.erb"), Dir.glob("#{path}/**/*.rb") ]
+      [
+        Dir.glob("#{path}/**/*.erb"),
+        Dir.glob("#{path}/**/*.haml"),
+        Dir.glob("#{path}/**/*.rb")
+      ]
     else
-      [ Dir.glob("app/**/*.erb"),
-      Dir.glob("app/**/controllers/**/*.rb"),
-      Dir.glob("app/**/helpers/**/*.rb")]
+      [
+        Dir.glob("app/**/*.erb"),
+        Dir.glob("app/**/*.haml"),
+        Dir.glob("app/**/models/**/*.rb"),
+        Dir.glob("app/**/controllers/**/*.rb"),
+        Dir.glob("app/**/helpers/**/*.rb")
+      ]
     end.flatten
   end
 
