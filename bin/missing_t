@@ -20,7 +20,7 @@ def print_hash(h, level)
   end
 end
 
-missing_t = MissingT.new
+missing_t = MissingT.new(MissingT::FileReader.new)
 missing_t.parse_options(ARGV)
 missing_message_strings = missing_t.find_missing_translations(ARGV.first).values.map { |ms| hashify(ms) }
 

@@ -6,9 +6,15 @@ RSpec.configure do |config|
   config.mock_with :mocha
 end
 
+class ContentReader
+  def read(content)
+    yield content
+  end
+end
+
 describe "MissingT" do
   before do
-    @missing_t = MissingT.new
+    @missing_t = MissingT.new(ContentReader.new)
     @es_translations =  {"es"=>
       {"zoo"=>{"elephant"=>"elefante", "bear"=>"oso", "lion"=>"leon", "bee" => "abeja"},
        "lamp"=>"lampa",
@@ -26,17 +32,7 @@ describe "MissingT" do
     @yet_other_es_translations = { "es" => {"zoo" => {"monkey" => "mono", "horse" => "caballo"}}}
   end
 
-  #TODO: Refactor overcomplicated test setup and thus the actual design of the code
   describe "the i18n query extracion" do
-    before do
-      metaclass = class << @missing_t; self; end
-      metaclass.instance_eval do
-        define_method :get_content_of_file_with_i18n_queries do |content|
-          content
-        end
-      end
-    end
-
     it "should correctly extract the I18n.t type of messages" do
       content = <<-EOS
         <div class="title_gray"><span><%= I18n.t("anetcom.member.projects.new.page_title") %></span></div>

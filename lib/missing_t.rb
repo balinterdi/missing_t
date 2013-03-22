@@ -4,15 +4,6 @@ require "ostruct"
 require "forwardable"
 
 class Hash
-  def has_nested_key?(key)
-    h = self
-    key.to_s.split('.').each do |segment|
-      return false unless h.key?(segment)
-      h = h[segment]
-    end
-    true
-  end
-
   # idea snatched from deep_merge in Rails source code
   def deep_safe_merge(other_hash)
     self.merge(other_hash) do |key, oldval, newval|
@@ -52,9 +43,21 @@ end
 
 class MissingT
 
+  class FileReader
+    def read(file)
+      open(File.expand_path(file), "r") do |f|
+        yield f.read
+      end
+    end
+  end
+
   VERSION = "0.3.1"
 
   include Helpers
+
+  def initialize(reader)
+    @reader = reader
+  end
 
   def parse_options(args)
     @options = OpenStruct.new
@@ -101,21 +104,16 @@ class MissingT
     end.flatten
   end
 
-  def get_content_of_file_with_i18n_queries(file)
-    f = open(File.expand_path(file), "r")
-    content = f.read()
-    f.close()
-    content
-  end
-
   def extract_i18n_queries(file)
     i18n_query_pattern = /[^\w]+(?:I18n\.translate|I18n\.t|translate|t)\s*\((.*?)[,\)]/
     i18n_query_no_parens_pattern = /[^\w]+(?:I18n\.translate|I18n\.t|translate|t)\s+(['"])(.*?)\1/
-    file_content = get_content_of_file_with_i18n_queries(file)
-    ([]).tap do |i18n_message_strings|
-      i18n_message_strings << file_content.scan(i18n_query_pattern).map { |match| match[0].gsub(/['"\s]/, '') }
-      i18n_message_strings << file_content.scan(i18n_query_no_parens_pattern).map { |match| match[1].gsub(/['"\s]/, '') }
-    end.flatten
+
+    @reader.read(file) do |content|
+      ([]).tap do |i18n_message_strings|
+        i18n_message_strings << content.scan(i18n_query_pattern).map { |match| match[0].gsub(/['"\s]/, '') }
+        i18n_message_strings << content.scan(i18n_query_no_parens_pattern).map { |match| match[1].gsub(/['"\s]/, '') }
+      end.flatten
+    end
   end
 
   def translation_queries
