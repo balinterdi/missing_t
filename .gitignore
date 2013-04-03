@@ -3,3 +3,5 @@ doc
 Manifest
 .bundle/*
 tmp/*
+.rbenv-version
+
