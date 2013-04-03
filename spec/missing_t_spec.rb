@@ -33,34 +33,54 @@ describe "MissingT" do
   end
 
   describe "the i18n query extracion" do
-    it "should correctly extract the I18n.t type of messages" do
-      content = <<-EOS
-        <div class="title_gray"><span><%= I18n.t("anetcom.member.projects.new.page_title") %></span></div>
-      EOS
-      @missing_t.extract_i18n_queries(content).should == ["anetcom.member.projects.new.page_title"]
+    describe "when the translation function is called as I18n.t" do
+      it "should correctly extract the key" do
+        content = <<-EOS
+          <div class="title_gray"><span><%= I18n.t("anetcom.member.projects.new.page_title") %></span></div>
+        EOS
+        @missing_t.extract_i18n_queries(content).should == ["anetcom.member.projects.new.page_title"]
+      end
+      it "should correctly extract the key not right after the <%= mark" do
+        content = <<-EOS
+          <%= submit_tag I18n.t('anetcom.member.projects.new.create_project'), :class => 'button' %>
+        EOS
+        @missing_t.extract_i18n_queries(content).should == ["anetcom.member.projects.new.create_project"]
+      end
+
+      it "should correctly extract the key when there is an argument in the call" do
+        content = <<-EOS
+          :html => {:title => I18n.t("tog_social.sharing.share_with", :name => shared.name)}
+        EOS
+        @missing_t.extract_i18n_queries(content).should == ["tog_social.sharing.share_with"]
+      end
+
+      it "should find and correctly extract a dynamic key translation message" do
+        content = %q(<div class="title_gray"><span><%= I18n.t("mycompany.welcome.#{key}") %></span></div>)
+        @missing_t.extract_i18n_queries(content).should == [%q(mycompany.welcome.#{key})]
+      end
     end
 
-    it "should correctly extract the I18n.t type of messages not right after the <%= mark" do
-      content = <<-EOS
-        <%= submit_tag I18n.t('anetcom.member.projects.new.create_project'), :class => 'button' %>
-      EOS
-      @missing_t.extract_i18n_queries(content).should == ["anetcom.member.projects.new.create_project"]
-    end
+    describe "when the translation function is called as t" do
+      it "should correctly extract the key" do
+        content = <<-EOS
+          <div class="title_gray"><span><%= t("anetcom.member.projects.new.page_title") %></span></div>
+        EOS
+        @missing_t.extract_i18n_queries(content).should == ["anetcom.member.projects.new.page_title"]
+      end
 
-    it "should correctly extract the I18n.t type of messages from a link_to" do
-      # honestly, I am not sure anymore why this qualifies as a sep. test case
-      # but I am sure there was something special about this one :)
-      content = <<-EOS
-        <%= link_to I18n.t("tog_headlines.admin.publish"), publish_admin_headlines_story_path(story), :class => 'button' %>
-      EOS
-      @missing_t.extract_i18n_queries(content).should == ["tog_headlines.admin.publish"]
-    end
+      it "should find several messages on the same line" do
+        content = <<-EOS
+        <div class="title_gray"><span><%= t("anetcom.member.projects.new.page_title") %></span><span>t("anetcom.member.projects.new.page_size")</span></div>
+        EOS
+        @missing_t.extract_i18n_queries(content).should == ["anetcom.member.projects.new.page_title", "anetcom.member.projects.new.page_size"]
+      end
 
-    it "should correctly extract the I18n.t type of messages with an argument in the message" do
-      content = <<-EOS
-        :html => {:title => I18n.t("tog_social.sharing.share_with", :name => shared.name)}
-      EOS
-      @missing_t.extract_i18n_queries(content).should == ["tog_social.sharing.share_with"]
+      it "should find messages with a parens-less call" do
+        content = <<-EOS
+          <div class="title_gray"><span><%= t "anetcom.member.projects.new.page_title" %></span></div>
+        EOS
+        @missing_t.extract_i18n_queries(content).should == ["anetcom.member.projects.new.page_title"]
+      end
     end
 
     it "should correctly extract the I18n.translate type of messages" do
@@ -70,37 +90,11 @@ describe "MissingT" do
       @missing_t.extract_i18n_queries(content).should == ["anetcom.member.projects.new.page_title"]
     end
 
-    it "should correctly extract the t type of messages" do
-      content = <<-EOS
-        <div class="title_gray"><span><%= t("anetcom.member.projects.new.page_title") %></span></div>
-      EOS
-      @missing_t.extract_i18n_queries(content).should == ["anetcom.member.projects.new.page_title"]
-    end
-
-    it "should find several messages on the same line" do
-      content = <<-EOS
-      <div class="title_gray"><span><%= t("anetcom.member.projects.new.page_title") %></span><span>t("anetcom.member.projects.new.page_size")</span></div>
-      EOS
-      @missing_t.extract_i18n_queries(content).should == ["anetcom.member.projects.new.page_title", "anetcom.member.projects.new.page_size"]
-    end
-
-    it "should find messages with a parens-less call" do
-      content = <<-EOS
-        <div class="title_gray"><span><%= t "anetcom.member.projects.new.page_title" %></span></div>
-      EOS
-      @missing_t.extract_i18n_queries(content).should == ["anetcom.member.projects.new.page_title"]
-    end
-
     it "should not extract a function call that just ends in t" do
       content = <<-EOS
         <div class="title_gray"><span><%= at(3) %></span></div>
       EOS
       @missing_t.extract_i18n_queries(content).should == []
-    end
-
-    it "should find and correctly extract a dynamic key translation message" do
-      content = %q(<div class="title_gray"><span><%= I18n.t("mycompany.welcome.#{key}") %></span></div>)
-      @missing_t.extract_i18n_queries(content).should == [%q(mycompany.welcome.#{key})]
     end
 
   end
