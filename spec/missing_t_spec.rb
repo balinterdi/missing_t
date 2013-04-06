@@ -1,11 +1,5 @@
 require 'spec_helper'
 
-# use mocha for mocking instead of
-# Rspec's own mock framework
-RSpec.configure do |config|
-  config.mock_with :mocha
-end
-
 class ContentReader
   def read(content)
     yield content
@@ -14,7 +8,7 @@ end
 
 describe "MissingT" do
   before do
-    @missing_t = MissingT.new(ContentReader.new)
+    @missing_t = MissingT.new(reader: ContentReader.new)
     @es_translations =  {"es"=>
       {"zoo"=>{"elephant"=>"elefante", "bear"=>"oso", "lion"=>"leon", "bee" => "abeja"},
        "lamp"=>"lampa",
@@ -98,27 +92,4 @@ describe "MissingT" do
     end
 
   end
-
-  describe "finding missing translations" do
-    before do
-      @t_queries = { :fake_file => ["mother", "zoo.bee", "zoo.wasp", "pen"] }
-      @missing_t.stubs(:translation_keys).returns(@fr_translations.merge(@es_translations))
-      @missing_t.stubs(:translation_queries).returns(@t_queries)
-    end
-
-    it "should correctly get missing translations for a specific language" do
-      miss_entries = @missing_t.find_missing_translations("fr").map{ |e| e[1] }.flatten
-      miss_entries.should include("fr.pen")
-      miss_entries.should include("fr.zoo.bee")
-    end
-
-    it "should correctly get missing translations" do
-      miss_entries = @missing_t.find_missing_translations.map{ |e| e[1] }.flatten
-      miss_entries.should include("fr.zoo.bee")
-      miss_entries.should include("fr.pen")
-      miss_entries.should include("es.zoo.wasp")
-      miss_entries.should include("es.mother")
-    end
-  end
-
 end

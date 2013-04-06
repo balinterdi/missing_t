@@ -18,10 +18,7 @@ GEM
       rspec (~> 2.11)
     listen (0.7.2)
     lumberjack (1.0.2)
-    metaclass (0.0.1)
     method_source (0.8.1)
-    mocha (0.13.3)
-      metaclass (~> 0.0.1)
     pry (0.9.11.4)
       coderay (~> 1.0.5)
       method_source (~> 0.8)
@@ -46,7 +43,6 @@ DEPENDENCIES
   guard (~> 1.5.4)
   guard-rspec (~> 2.3.1)
   missing_t!
-  mocha (~> 0.13.3)
   rake (~> 10.0.3)
   rb-fsevent (~> 0.9.1)
   rspec (~> 2.12.0)

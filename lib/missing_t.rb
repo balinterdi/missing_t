@@ -1,7 +1,21 @@
 require "yaml"
-require "optparse"
-require "ostruct"
-require "forwardable"
+
+#TODO: Should I feel about these 'global' helper functions?
+def hashify(strings)
+  strings.map { |s| s.split('.') }.each_with_object({}) do |segmented_string, h|
+    segmented_string.each do |segment|
+      h[segment] ||= {}
+      h = h[segment]
+    end
+  end
+end
+
+def print_hash(h, level)
+  h.each_pair do |k,v|
+    puts %(#{" " * (level*2)}#{k}:)
+    print_hash(v, level+1)
+  end
+end
 
 class Hash
   # idea snatched from deep_merge in Rails source code
@@ -9,8 +23,8 @@ class Hash
     self.merge(other_hash) do |key, oldval, newval|
       oldval = oldval.to_hash if oldval.respond_to?(:to_hash)
       newval = newval.to_hash if newval.respond_to?(:to_hash)
-      if oldval.class.to_s == 'Hash'
-        if newval.class.to_s == 'Hash'
+      if oldval === Hash
+        if newval === Hash
           oldval.deep_safe_merge(newval)
         else
           oldval
@@ -55,32 +69,42 @@ class MissingT
 
   include Helpers
 
-  def initialize(reader)
-    @reader = reader
+  def initialize(options={})
+    @reader = options.fetch(:reader, FileReader.new)
+    @languages = options[:languages]
+    @path = options[:path]
   end
 
-  def parse_options(args)
-    @options = OpenStruct.new
-    @options.prefix = nil
-    opts = OptionParser.new do |opts|
-      opts.on("-f", "--file FILE_OR_DIR",
-              "look for missing translations in files under FILE_OR_DIR",
-              "(if a file is given, only look in that file)") do |path|
-        @options.path = path
+  def run
+    missing_translations = collect
+    missing_message_strings = missing_translations.values.map { |ms| hashify(ms) }
+
+    missing = missing_message_strings.each_with_object({}) do |h, all_message_strings|
+      all_message_strings.deep_safe_merge!(h)
+    end
+
+    missing.each do |language, missing_for_language|
+      puts
+      puts "#{language}:"
+      print_hash(missing_for_language, 1)
+    end
+  end
+
+  def collect
+    ts = translation_keys
+    #TODO: If no translation keys were found and the languages were not given explicitly
+    # issue a warning and bail out
+    languages = @languages ? @languages : ts.keys
+    get_missing_translations(translation_keys, translation_queries, languages)
+  end
+
+  def get_missing_translations(keys, queries, languages)
+    languages.each_with_object({}) do |lang, missing|
+      get_missing_translations_for_lang(keys, queries, lang).each do |file, queries|
+        missing[file] ||= []
+        missing[file].concat(queries).uniq!
       end
     end
-
-    opts.on_tail("-h", "--help", "Show this message") do
-      puts opts
-      exit
-    end
-
-    opts.on_tail("--version", "Show version") do
-      puts VERSION
-      exit
-    end
-
-    opts.parse!(args)
   end
 
   def translation_keys
@@ -90,37 +114,6 @@ class MissingT
         t = open(file) { |f| YAML.load(f.read) }
         translations.deep_safe_merge!(t)
       end
-    end
-  end
-
-  def files_with_i18n_queries
-    if path = @options.path
-      path = path[0...-1] if path[-1..-1] == '/'
-      [
-        Dir.glob("#{path}/**/*.erb"),
-        Dir.glob("#{path}/**/*.haml"),
-        Dir.glob("#{path}/**/*.rb")
-      ]
-    else
-      [
-        Dir.glob("app/**/*.erb"),
-        Dir.glob("app/**/*.haml"),
-        Dir.glob("app/**/models/**/*.rb"),
-        Dir.glob("app/**/controllers/**/*.rb"),
-        Dir.glob("app/**/helpers/**/*.rb")
-      ]
-    end.flatten
-  end
-
-  def extract_i18n_queries(file)
-    i18n_query_pattern = /[^\w]+(?:I18n\.translate|I18n\.t|translate|t)\s*\((.*?)[,\)]/
-    i18n_query_no_parens_pattern = /[^\w]+(?:I18n\.translate|I18n\.t|translate|t)\s+(['"])(.*?)\1/
-
-    @reader.read(file) do |content|
-      ([]).tap do |i18n_message_strings|
-        i18n_message_strings << content.scan(i18n_query_pattern).map { |match| match[0].gsub(/['"\s]/, '') }
-        i18n_message_strings << content.scan(i18n_query_no_parens_pattern).map { |match| match[1].gsub(/['"\s]/, '') }
-      end.flatten
     end
   end
 
@@ -142,35 +135,55 @@ class MissingT
     true
   end
 
-  def get_missing_translations(keys, queries, languages)
-    languages.each_with_object({}) do |lang, missing|
-      get_missing_translations_for_lang(keys, queries, lang).each do |file, queries|
-        missing[file] ||= []
-        missing[file].concat(queries).uniq!
+  def files_with_i18n_queries
+    if @path
+      path = File.expand_path(@path)
+      if File.file?(path)
+        [@path]
+      else
+        path.chomp!('/')
+        [
+          Dir.glob("#{path}/**/*.erb"),
+          Dir.glob("#{path}/**/*.haml"),
+          Dir.glob("#{path}/**/*.rb")
+        ]
+      end
+    else
+      [
+        Dir.glob("app/**/*.erb"),
+        Dir.glob("app/**/*.haml"),
+        Dir.glob("app/**/models/**/*.rb"),
+        Dir.glob("app/**/controllers/**/*.rb"),
+        Dir.glob("app/**/helpers/**/*.rb")
+      ]
+    end.flatten
+  end
+
+  def extract_i18n_queries(file)
+    i18n_query_pattern = /[^\w]+(?:I18n\.translate|I18n\.t|translate|t)\s*\((.*?)[,\)]/
+    i18n_query_no_parens_pattern = /[^\w]+(?:I18n\.translate|I18n\.t|translate|t)\s+(['"])(.*?)\1/
+
+    @reader.read(File.expand_path(file)) do |content|
+      ([]).tap do |i18n_message_strings|
+        i18n_message_strings.concat content.scan(i18n_query_pattern).map { |match| match[0].gsub(/['"\s]/, '') }
+        i18n_message_strings.concat content.scan(i18n_query_no_parens_pattern).map { |match| match[1].gsub(/['"\s]/, '') }
       end
     end
   end
 
-  def find_missing_translations(lang=nil)
-    ts = translation_keys
-    get_missing_translations(translation_keys, translation_queries, lang ? [lang] : ts.keys)
+private
+
+  def get_missing_translations_for_lang(keys, queries, lang)
+    queries.map do |file, queries_in_file|
+      queries_with_no_translation = queries_in_file.reject { |q| has_translation?(keys, lang, q) }
+      if queries_with_no_translation.any?
+        [file, queries_with_no_translation.map { |q| i18n_label(lang, q) }]
+      end
+    end.compact
   end
 
-  private
-    def get_missing_translations_for_lang(keys, queries, lang)
-      queries.map do |file, queries_in_file|
-        queries_with_no_translation = queries_in_file.select { |q| !has_translation?(keys, lang, q) }
-        if queries_with_no_translation.empty?
-          nil
-        else
-          [file, queries_with_no_translation.map { |q| i18n_label(lang, q) }]
-        end
-      end.compact
-
-    end
-
-    def i18n_label(lang, query)
-      "#{lang}.#{query}"
-    end
+  def i18n_label(lang, query)
+    "#{lang}.#{query}"
+  end
 
 end
