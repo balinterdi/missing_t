@@ -41,20 +41,6 @@ class Hash
 
 end
 
-module Helpers
-  # snatched from rspec source
-  def colour(text, colour_code)
-    "#{colour_code}#{text}\e[0m"
-  end
-
-  def green(text); colour(text, "\e[32m"); end
-  def red(text); colour(text, "\e[31m"); end
-  def magenta(text); colour(text, "\e[35m"); end
-  def yellow(text); colour(text, "\e[33m"); end
-  def blue(text); colour(text, "\e[34m"); end
-
-end
-
 class MissingT
 
   class FileReader
@@ -66,8 +52,6 @@ class MissingT
   end
 
   VERSION = "0.3.2"
-
-  include Helpers
 
   def initialize(options={})
     @reader = options.fetch(:reader, FileReader.new)
