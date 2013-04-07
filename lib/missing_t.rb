@@ -1,19 +1,24 @@
 require "yaml"
 
 #TODO: Should I feel about these 'global' helper functions?
-def hashify(strings)
-  strings.map { |s| s.split('.') }.each_with_object({}) do |segmented_string, h|
-    segmented_string.each do |segment|
-      h[segment] ||= {}
-      h = h[segment]
-    end
+def hashify(segments, value)
+  return {} if segments.empty?
+  s, *rest = segments
+  if rest.empty?
+    { s => value }
+  else
+    { s => hashify(rest, value) }
   end
 end
 
 def print_hash(h, level)
   h.each_pair do |k,v|
-    puts %(#{" " * (level*2)}#{k}:)
-    print_hash(v, level+1)
+    if v.respond_to?(:each_pair)
+      puts %(#{" " * (level*2)}#{k}:)
+      print_hash(v, level+1)
+    else
+      puts %(#{" " * (level*2)}#{k}: #{v})
+    end
   end
 end
 
@@ -23,8 +28,8 @@ class Hash
     self.merge(other_hash) do |key, oldval, newval|
       oldval = oldval.to_hash if oldval.respond_to?(:to_hash)
       newval = newval.to_hash if newval.respond_to?(:to_hash)
-      if oldval === Hash
-        if newval === Hash
+      if oldval.is_a? Hash
+        if newval.is_a? Hash
           oldval.deep_safe_merge(newval)
         else
           oldval
@@ -45,8 +50,8 @@ class MissingT
 
   class FileReader
     def read(file)
-      open(File.expand_path(file), "r") do |f|
-        yield f.read
+      IO.readlines(file).each do |line|
+        yield line
       end
     end
   end
@@ -60,11 +65,11 @@ class MissingT
   end
 
   def run
-    missing_translations = collect
-    missing_message_strings = missing_translations.values.map { |ms| hashify(ms) }
-
-    missing = missing_message_strings.each_with_object({}) do |h, all_message_strings|
-      all_message_strings.deep_safe_merge!(h)
+    missing = {}
+    collect_missing.each do |file, message_strings|
+      message_strings.each do |message_string, value|
+        missing.deep_safe_merge! hashify(message_string.split('.'), value)
+      end
     end
 
     missing.each do |language, missing_for_language|
@@ -74,7 +79,7 @@ class MissingT
     end
   end
 
-  def collect
+  def collect_missing
     ts = translation_keys
     #TODO: If no translation keys were found and the languages were not given explicitly
     # issue a warning and bail out
@@ -84,9 +89,9 @@ class MissingT
 
   def get_missing_translations(keys, queries, languages)
     languages.each_with_object({}) do |lang, missing|
-      get_missing_translations_for_lang(keys, queries, lang).each do |file, queries|
-        missing[file] ||= []
-        missing[file].concat(queries).uniq!
+      get_missing_translations_for_language(keys, queries, lang).each do |file, queries_for_language|
+        missing[file] ||= {}
+        missing[file].merge!(queries_for_language)
       end
     end
   end
@@ -144,30 +149,59 @@ class MissingT
   end
 
   def extract_i18n_queries(file)
-    i18n_query_pattern = /[^\w]+(?:I18n\.translate|I18n\.t|translate|t)\s*\((.*?)[,\)]/
-    i18n_query_no_parens_pattern = /[^\w]+(?:I18n\.translate|I18n\.t|translate|t)\s+(['"])(.*?)\1/
-
-    @reader.read(File.expand_path(file)) do |content|
-      ([]).tap do |i18n_message_strings|
-        i18n_message_strings.concat content.scan(i18n_query_pattern).map { |match| match[0].gsub(/['"\s]/, '') }
-        i18n_message_strings.concat content.scan(i18n_query_no_parens_pattern).map { |match| match[1].gsub(/['"\s]/, '') }
+    ({}).tap do |queries|
+      @reader.read(File.expand_path(file)) do |line|
+        qs = scan_line(line)
+        queries.merge!(qs)
       end
     end
   end
 
 private
 
-  def get_missing_translations_for_lang(keys, queries, lang)
-    queries.map do |file, queries_in_file|
-      queries_with_no_translation = queries_in_file.reject { |q| has_translation?(keys, lang, q) }
+  def get_missing_translations_for_language(keys, queries, l)
+    queries.each_with_object({}) do |(file, queries_in_file), missing_translations|
+      queries_with_no_translation = queries_in_file.reject { |q, _| has_translation?(keys, l, q) }
       if queries_with_no_translation.any?
-        [file, queries_with_no_translation.map { |q| i18n_label(lang, q) }]
+        missing_translations[file] = add_langauge_prefix(queries_with_no_translation, l)
       end
-    end.compact
+    end
+  end
+
+  def add_langauge_prefix(qs, l)
+    qs.each_with_object({}) do |(q, v), with_prefix|
+      with_prefix["#{l}.#{q}"] = v
+    end
   end
 
   def i18n_label(lang, query)
     "#{lang}.#{query}"
   end
+
+  def scan_line(line)
+    with_parens = /[^\w]+(?:I18n\.translate|I18n\.t|translate|t)\s*\((['"](.*?)['"].*?)\)/
+    no_parens = /[^\w]+(?:I18n\.translate|I18n\.t|translate|t)\s+(['"](.*?)['"].*?)/
+    [with_parens, no_parens].each_with_object({}) do |pattern, extracted_queries|
+      line.scan(pattern).each do |m|
+        if m.any?
+          message_string = m[1]
+          _, *options = m[0].split(',')
+          extracted_queries[message_string] = extract_default_value(options)
+        end
+      end
+    end
+  end
+
+  def extract_default_value(message_string_options)
+    [/:default\s*=>\s*['"](.*)['"]/, /default:\s*['"](.*)['"]/].each do |default_extractor|
+      message_string_options.each do |option|
+        if default_key_match=default_extractor.match(option)
+          return default_key_match[1]
+        end
+      end
+    end
+    ''
+  end
+
 
 end
