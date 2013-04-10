@@ -56,7 +56,7 @@ class MissingT
     end
   end
 
-  VERSION = "0.4.0"
+  VERSION = "0.4.1"
 
   def initialize(options={})
     @reader = options.fetch(:reader, FileReader.new)
